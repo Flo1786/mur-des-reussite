@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI — Clôture de module</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #f8f6f2;
+    --card: #ffffff;
+    --text: #1a1714;
+    --text-dim: #7a7068;
+    --border: rgba(0,0,0,0.08);
+    --shadow: rgba(0,0,0,0.07);
+
+    --e: #e8673a; --e-light: #fdf0eb; --e-border: rgba(232,103,58,0.25);
+    --i: #3a7be8; --i-light: #ebf1fd; --i-border: rgba(58,123,232,0.25);
+    --s: #e8a33a; --s-light: #fdf5eb; --s-border: rgba(232,163,58,0.25);
+    --n: #8b3ae8; --n-light: #f3ebfd; --n-border: rgba(139,58,232,0.25);
+    --t: #3ab8e8; --t-light: #ebf8fd; --t-border: rgba(58,184,232,0.25);
+    --f: #e83a8b; --f-light: #fdeбf3; --f-border: rgba(232,58,139,0.25);
+    --j: #3ae87a; --j-light: #ebfdf1; --j-border: rgba(58,232,122,0.25);
+    --p: #e8d83a; --p-light: #fdfceb; --p-border: rgba(232,216,58,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  /* Header */
+  header {
+    background: var(--text);
+    color: white;
+    padding: 1.8rem 2rem 1.4rem;
+    text-align: center;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-style: italic;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    font-size: 0.88rem;
+    opacity: 0.6;
+    font-weight: 300;
+  }
+
+  /* Navigation dimensions */
+  .dim-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.2rem 2rem;
+    flex-wrap: wrap;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .dim-pill {
+    padding: 0.45rem 1.1rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    transition: all 0.25s;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dim-pill.done { color: white; border-color: transparent; }
+  .dim-pill.active { color: var(--text); border-color: var(--text); background: white; box-shadow: 0 2px 8px var(--shadow); }
+  .dim-pill .check { display: none; }
+  .dim-pill.done .check { display: inline; }
+
+  /* Contenu principal */
+  .dimension {
+    display: none;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .dimension.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dim-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .dim-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-style: italic;
+    margin-bottom: 0.4rem;
+  }
+
+  .dim-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  /* Zone de mots à trier */
+  .words-pool {
+    background: white;
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    min-height: 80px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .words-pool.drag-over {
+    border-color: #aaa;
+    background: #fafafa;
+  }
+
+  .words-pool-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    width: 100%;
+  }
+
+  /* Zones de dépôt */
+  .drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .drop-zone {
+    border-radius: 14px;
+    padding: 1.2rem;
+    min-height: 140px;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .drop-zone.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+
+  .drop-zone-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    margin-bottom: 0.2rem;
+  }
+
+  .drop-zone-desc {
+    font-size: 0.78rem;
+    font-weight: 300;
+    opacity: 0.7;
+    margin-bottom: 0.6rem;
+  }
+
+  .drop-zone-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 40px;
+    flex: 1;
+  }
+
+  /* Mots */
+  .word-chip {
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text);
+    box-shadow: 0 1px 4px var(--shadow);
+    touch-action: none;
+  }
+
+  .word-chip:hover { transform: translateY(-2px); box-shadow: 0 3px 10px var(--shadow); }
+  .word-chip.dragging { opacity: 0.4; cursor: grabbing; }
+  .word-chip.correct { border-color: transparent !important; color: white !important; }
+  .word-chip.incorrect { border-color: #e74c3c !important; background: #fdf0f0 !important; color: #c0392b !important; animation: shake 0.4s ease; }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    75%{transform:translateX(6px)}
+  }
+
+  /* Boutons */
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s;
+  }
+
+  .btn-check {
+    background: var(--text);
+    color: white;
+  }
+  .btn-check:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .btn-reset {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1.5px solid var(--border);
+  }
+  .btn-reset:hover { border-color: var(--text-dim); color: var(--text); }
+
+  .btn-next {
+    color: white;
+    display: none;
+  }
+  .btn-next:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-next.visible { display: block; }
+
+  /* Score */
+  .score-bar {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    min-height: 1.4rem;
+    font-weight: 500;
+  }
+
+  /* Résumé final */
+  #final-screen {
+    display: none;
+    padding: 3rem 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    animation: fadeUp 0.6s ease;
+  }
+
+  #final-screen.visible { display: block; }
+
+  .final-icon { font-size: 4rem; margin-bottom: 1rem; }
+
+  .final-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    font-style: italic;
+    margin-bottom: 0.8rem;
+  }
+
+  .final-text {
+    font-size: 1rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 2rem;
+  }
+
+  .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .score-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .score-card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+
+  .score-card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+  }
+
+  .btn-restart {
+    background: var(--text);
+    color: white;
+    border: none;
+    padding: 0.8rem 2.2rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-restart:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Les 4 dimensions du MBTI</h1>
+  <p>Glisse chaque mot vers la préférence qui lui correspond</p>
+</header>
+
+<div class="dim-nav" id="dim-nav">
+  <button class="dim-pill active" id="pill-0" onclick="goTo(0)"><span class="check">✓</span> E / I</button>
+  <button class="dim-pill" id="pill-1" onclick="goTo(1)"><span class="check">✓</span> S / N</button>
+  <button class="dim-pill" id="pill-2" onclick="goTo(2)"><span class="check">✓</span> T / F</button>
+  <button class="dim-pill" id="pill-3" onclick="goTo(3)"><span class="check">✓</span> J / P</button>
+</div>
+
+<!-- DIMENSION 1 : E / I -->
+<div class="dimension active" id="dim-0">
+  <div class="dim-header">
+    <div class="dim-title">Extraversion / Introversion</div>
+    <div class="dim-subtitle">Comment tu recharges ton énergie et où tu portes ton attention</div>
+  </div>
+
+  <div class="words-pool" id="pool-0">
+    <div class="words-pool-label">Mots à classer</div>
+  </div>
+
+  <div class="drop-zones">
+    <div class="drop-zone" style="background:var(--e-light);border-color:var(--e-border)" id="zone-E"
+      ondragover="onDragOver(event,'E')" ondragleave="onDragLeave(event,'E')" ondrop="onDrop(event,'E')">
+      <div class="drop-zone-label" style="color:var(--e)">E — Extraversion</div>
+      <div class="drop-zone-desc">Énergie tournée vers l'extérieur</div>
+      <div class="drop-zone-words" id="words-E"></div>
+    </div>
+    <div class="drop-zone" style="background:var(--i-light);border-color:var(--i-border)" id="zone-I"
+      ondragover="onDragOver(event,'I')" ondragleave="onDragLeave(event,'I')" ondrop="onDrop(event,'I')">
+      <div class="drop-zone-label" style="color:var(--i)">I — Introversion</div>
+      <div class="drop-zone-desc">Énergie tournée vers l'intérieur</div>
+      <div class="drop-zone-words" id="words-I"></div>
+    </div>
+  </div>
+
+  <div class="score-bar" id="score-0"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetDim(0)">↺ Recommencer</button>
+    <button class="btn btn-check" onclick="checkDim(0)">Vérifier mes réponses</button>
+    <button class="btn btn-next" id="next-0" style="background:var(--e)" onclick="goTo(1)">Dimension suivante →</button>
+  </div>
+</div>
+
+<!-- DIMENSION 2 : S / N -->
+<div class="dimension" id="dim-1">
+  <div class="dim-header">
+    <div class="dim-title">Sensation / iNtuition</div>
+    <div class="dim-subtitle">Comment tu recueilles l'information et ce à quoi tu fais attention</div>
+  </div>
+
+  <div class="words-pool" id="pool-1">
+    <div class="words-pool-label">Mots à classer</div>
+  </div>
+
+  <div class="drop-zones">
+    <div class="drop-zone" style="background:var(--s-light);border-color:var(--s-border)" id="zone-S"
+      ondragover="onDragOver(event,'S')" ondragleave="onDragLeave(event,'S')" ondrop="onDrop(event,'S')">
+      <div class="drop-zone-label" style="color:var(--s)">S — Sensation</div>
+      <div class="drop-zone-desc">Le concret, le présent, les faits</div>
+      <div class="drop-zone-words" id="words-S"></div>
+    </div>
+    <div class="drop-zone" style="background:var(--n-light);border-color:var(--n-border)" id="zone-N"
+      ondragover="onDragOver(event,'N')" ondragleave="onDragLeave(event,'N')" ondrop="onDrop(event,'N')">
+      <div class="drop-zone-label" style="color:var(--n)">N — iNtuition</div>
+      <div class="drop-zone-desc">Les idées, le futur, les possibles</div>
+      <div class="drop-zone-words" id="words-N"></div>
+    </div>
+  </div>
+
+  <div class="score-bar" id="score-1"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetDim(1)">↺ Recommencer</button>
+    <button class="btn btn-check" onclick="checkDim(1)">Vérifier mes réponses</button>
+    <button class="btn btn-next" id="next-1" style="background:var(--n)" onclick="goTo(2)">Dimension suivante →</button>
+  </div>
+</div>
+
+<!-- DIMENSION 3 : T / F -->
+<div class="dimension" id="dim-2">
+  <div class="dim-header">
+    <div class="dim-title">Pensée / Sentiment</div>
+    <div class="dim-subtitle">Comment tu prends tes décisions et ce qui guide tes choix</div>
+  </div>
+
+  <div class="words-pool" id="pool-2">
+    <div class="words-pool-label">Mots à classer</div>
+  </div>
+
+  <div class="drop-zones">
+    <div class="drop-zone" style="background:var(--t-light);border-color:var(--t-border)" id="zone-T"
+      ondragover="onDragOver(event,'T')" ondragleave="onDragLeave(event,'T')" ondrop="onDrop(event,'T')">
+      <div class="drop-zone-label" style="color:var(--t)">T — Thinking</div>
+      <div class="drop-zone-desc">La logique, l'objectivité, l'analyse</div>
+      <div class="drop-zone-words" id="words-T"></div>
+    </div>
+    <div class="drop-zone" style="background:var(--f-light);border-color:var(--f-border)" id="zone-F"
+      ondragover="onDragOver(event,'F')" ondragleave="onDragLeave(event,'F')" ondrop="onDrop(event,'F')">
+      <div class="drop-zone-label" style="color:var(--f)">F — Feeling</div>
+      <div class="drop-zone-desc">Les valeurs, l'harmonie, l'humain</div>
+      <div class="drop-zone-words" id="words-F"></div>
+    </div>
+  </div>
+
+  <div class="score-bar" id="score-2"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetDim(2)">↺ Recommencer</button>
+    <button class="btn btn-check" onclick="checkDim(2)">Vérifier mes réponses</button>
+    <button class="btn btn-next" id="next-2" style="background:var(--f)" onclick="goTo(3)">Dimension suivante →</button>
+  </div>
+</div>
+
+<!-- DIMENSION 4 : J / P -->
+<div class="dimension" id="dim-3">
+  <div class="dim-header">
+    <div class="dim-title">Jugement / Perception</div>
+    <div class="dim-subtitle">Comment tu t'organises et vis avec le monde extérieur</div>
+  </div>
+
+  <div class="words-pool" id="pool-3">
+    <div class="words-pool-label">Mots à classer</div>
+  </div>
+
+  <div class="drop-zones">
+    <div class="drop-zone" style="background:var(--j-light);border-color:var(--j-border)" id="zone-J"
+      ondragover="onDragOver(event,'J')" ondragleave="onDragLeave(event,'J')" ondrop="onDrop(event,'J')">
+      <div class="drop-zone-label" style="color:#2a9a4a">J — Jugement</div>
+      <div class="drop-zone-desc">La structure, la planification, la décision</div>
+      <div class="drop-zone-words" id="words-J"></div>
+    </div>
+    <div class="drop-zone" style="background:var(--p-light);border-color:var(--p-border)" id="zone-P"
+      ondragover="onDragOver(event,'P')" ondragleave="onDragLeave(event,'P')" ondrop="onDrop(event,'P')">
+      <div class="drop-zone-label" style="color:#a08a00">P — Perception</div>
+      <div class="drop-zone-desc">La flexibilité, l'ouverture, l'adaptation</div>
+      <div class="drop-zone-words" id="words-P"></div>
+    </div>
+  </div>
+
+  <div class="score-bar" id="score-3"></div>
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetDim(3)">↺ Recommencer</button>
+    <button class="btn btn-check" onclick="checkDim(3)">Vérifier mes réponses</button>
+    <button class="btn btn-next" id="next-3" style="background:#2a9a4a" onclick="showFinal()">Voir mon résumé →</button>
+  </div>
+</div>
+
+<!-- ÉCRAN FINAL -->
+<div id="final-screen">
+  <div class="final-icon">🎉</div>
+  <div class="final-title">Bravo, tu as complété les 4 dimensions !</div>
+  <div class="final-text">
+    Le MBTI n'est pas une boîte dans laquelle on t'enferme —<br>
+    c'est une invitation à mieux te comprendre et à comprendre les autres.
+  </div>
+  <div class="scores-grid" id="scores-grid"></div>
+  <button class="btn-restart" onclick="restartAll()">↺ Recommencer depuis le début</button>
+</div>
+
+<script>
+  // ── Données ───────────────────────────────────────────────────────────────
+  const DIMS = [
+    {
+      id: 0,
+      zones: ['E','I'],
+      colors: { E: '#e8673a', I: '#3a7be8' },
+      words: [
+        { text: 'Action', answer: 'E' },
+        { text: 'Sociable', answer: 'E' },
+        { text: 'Enthousiaste', answer: 'E' },
+        { text: 'Parler pour penser', answer: 'E' },
+        { text: 'Aime le groupe', answer: 'E' },
+        { text: 'Expressif', answer: 'E' },
+        { text: 'Réflexion', answer: 'I' },
+        { text: 'Réservé', answer: 'I' },
+        { text: 'Profondeur', answer: 'I' },
+        { text: 'Penser avant de parler', answer: 'I' },
+        { text: 'Préfère le calme', answer: 'I' },
+        { text: 'Concentré', answer: 'I' },
+      ]
+    },
+    {
+      id: 1,
+      zones: ['S','N'],
+      colors: { S: '#e8a33a', N: '#8b3ae8' },
+      words: [
+        { text: 'Concret', answer: 'S' },
+        { text: 'Réaliste', answer: 'S' },
+        { text: 'Détails', answer: 'S' },
+        { text: 'Pratique', answer: 'S' },
+        { text: 'Présent', answer: 'S' },
+        { text: 'Expérience', answer: 'S' },
+        { text: 'Imaginatif', answer: 'N' },
+        { text: 'Vision globale', answer: 'N' },
+        { text: 'Possibilités', answer: 'N' },
+        { text: 'Futur', answer: 'N' },
+        { text: 'Créatif', answer: 'N' },
+        { text: 'Intuition', answer: 'N' },
+      ]
+    },
+    {
+      id: 2,
+      zones: ['T','F'],
+      colors: { T: '#3ab8e8', F: '#e83a8b' },
+      words: [
+        { text: 'Logique', answer: 'T' },
+        { text: 'Objectif', answer: 'T' },
+        { text: 'Analyse', answer: 'T' },
+        { text: 'Critique constructive', answer: 'T' },
+        { text: 'Justice', answer: 'T' },
+        { text: 'Efficacité', answer: 'T' },
+        { text: 'Empathie', answer: 'F' },
+        { text: 'Harmonie', answer: 'F' },
+        { text: 'Valeurs', answer: 'F' },
+        { text: 'Sensible aux autres', answer: 'F' },
+        { text: 'Chaleur humaine', answer: 'F' },
+        { text: 'Bienveillance', answer: 'F' },
+      ]
+    },
+    {
+      id: 3,
+      zones: ['J','P'],
+      colors: { J: '#2a9a4a', P: '#a08a00' },
+      words: [
+        { text: 'Planifié', answer: 'J' },
+        { text: 'Ordonné', answer: 'J' },
+        { text: 'Décidé', answer: 'J' },
+        { text: 'Ponctuel', answer: 'J' },
+        { text: 'Structuré', answer: 'J' },
+        { text: 'Listes et agendas', answer: 'J' },
+        { text: 'Spontané', answer: 'P' },
+        { text: 'Flexible', answer: 'P' },
+        { text: 'Ouvert', answer: 'P' },
+        { text: 'Curieux', answer: 'P' },
+        { text: 'S\'adapte', answer: 'P' },
+        { text: 'Laisse les options ouvertes', answer: 'P' },
+      ]
+    }
+  ];
+
+  let currentDim = 0;
+  let draggedChip = null;
+  let dimScores = [null, null, null, null];
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  function initDim(idx) {
+    const dim = DIMS[idx];
+    const pool = document.getElementById('pool-' + idx);
+
+    // Vider les zones
+    dim.zones.forEach(z => document.getElementById('words-' + z).innerHTML = '');
+
+    // Mélanger les mots
+    const shuffled = [...dim.words].sort(() => Math.random() - 0.5);
+
+    // Créer les chips dans le pool
+    const label = pool.querySelector('.words-pool-label');
+    pool.innerHTML = '';
+    pool.appendChild(label);
+
+    shuffled.forEach(w => {
+      const chip = createChip(w.text, w.answer, idx);
+      pool.appendChild(chip);
+    });
+
+    document.getElementById('score-' + idx).textContent = '';
+    document.getElementById('next-' + idx).classList.remove('visible');
+  }
+
+  function createChip(text, answer, dimIdx) {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.textContent = text;
+    chip.dataset.answer = answer;
+    chip.dataset.dim = dimIdx;
+    chip.draggable = true;
+
+    chip.addEventListener('dragstart', e => {
+      draggedChip = chip;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      draggedChip = null;
+    });
+
+    // Touch support
+    chip.addEventListener('touchstart', onTouchStart, { passive: true });
+    chip.addEventListener('touchmove', onTouchMove, { passive: false });
+    chip.addEventListener('touchend', onTouchEnd);
+
+    return chip;
+  }
+
+  // ── Drag & Drop ───────────────────────────────────────────────────────────
+  function onDragOver(e, zone) {
+    e.preventDefault();
+    document.getElementById('zone-' + zone).classList.add('drag-over');
+  }
+
+  function onDragLeave(e, zone) {
+    document.getElementById('zone-' + zone).classList.remove('drag-over');
+  }
+
+  function onDrop(e, zone) {
+    e.preventDefault();
+    document.getElementById('zone-' + zone).classList.remove('drag-over');
+    if (!draggedChip) return;
+
+    // Retirer du pool ou d'une autre zone
+    draggedChip.parentElement.removeChild(draggedChip);
+    draggedChip.classList.remove('correct','incorrect');
+
+    const wordsContainer = document.getElementById('words-' + zone);
+    wordsContainer.appendChild(draggedChip);
+
+    // Permettre de reposer depuis une zone vers le pool
+    const pool = document.getElementById('pool-' + draggedChip.dataset.dim);
+    document.getElementById('pool-' + draggedChip.dataset.dim)
+      .setAttribute('ondragover', `onDragOverPool(event,${draggedChip.dataset.dim})`);
+    document.getElementById('pool-' + draggedChip.dataset.dim)
+      .setAttribute('ondrop', `onDropPool(event,${draggedChip.dataset.dim})`);
+  }
+
+  function onDragOverPool(e, idx) {
+    e.preventDefault();
+    document.getElementById('pool-' + idx).style.borderColor = '#aaa';
+  }
+
+  function onDropPool(e, idx) {
+    e.preventDefault();
+    document.getElementById('pool-' + idx).style.borderColor = '';
+    if (!draggedChip) return;
+    draggedChip.parentElement.removeChild(draggedChip);
+    draggedChip.classList.remove('correct','incorrect');
+    const pool = document.getElementById('pool-' + idx);
+    pool.appendChild(draggedChip);
+  }
+
+  // ── Touch support ─────────────────────────────────────────────────────────
+  let touchChip = null, clone = null;
+
+  function onTouchStart(e) {
+    touchChip = e.currentTarget;
+    const rect = touchChip.getBoundingClientRect();
+    clone = touchChip.cloneNode(true);
+    clone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;opacity:0.8;pointer-events:none;z-index:9999;`;
+    document.body.appendChild(clone);
+    touchChip.style.opacity = '0.3';
+  }
+
+  function onTouchMove(e) {
+    e.preventDefault();
+    const t = e.touches[0];
+    clone.style.left = (t.clientX - clone.offsetWidth / 2) + 'px';
+    clone.style.top = (t.clientY - clone.offsetHeight / 2) + 'px';
+  }
+
+  function onTouchEnd(e) {
+    if (clone) { clone.remove(); clone = null; }
+    if (!touchChip) return;
+    touchChip.style.opacity = '1';
+
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    if (!el) { touchChip = null; return; }
+
+    const zone = el.closest('.drop-zone');
+    const pool = el.closest('.words-pool');
+
+    if (zone) {
+      const zoneId = zone.id.replace('zone-', '');
+      touchChip.classList.remove('correct','incorrect');
+      touchChip.parentElement.removeChild(touchChip);
+      document.getElementById('words-' + zoneId).appendChild(touchChip);
+    } else if (pool) {
+      touchChip.classList.remove('correct','incorrect');
+      touchChip.parentElement.removeChild(touchChip);
+      pool.appendChild(touchChip);
+    }
+
+    touchChip = null;
+  }
+
+  // ── Vérification ─────────────────────────────────────────────────────────
+  function checkDim(idx) {
+    const dim = DIMS[idx];
+    let correct = 0, total = 0;
+
+    dim.zones.forEach(z => {
+      const container = document.getElementById('words-' + z);
+      container.querySelectorAll('.word-chip').forEach(chip => {
+        total++;
+        if (chip.dataset.answer === z) {
+          chip.classList.add('correct');
+          chip.classList.remove('incorrect');
+          chip.style.background = dim.colors[z];
+          chip.style.borderColor = dim.colors[z];
+          correct++;
+        } else {
+          chip.classList.add('incorrect');
+          chip.classList.remove('correct');
+          chip.style.background = '';
+          chip.style.borderColor = '';
+        }
+      });
+    });
+
+    const scoreEl = document.getElementById('score-' + idx);
+    const pct = total > 0 ? Math.round(correct / total * 100) : 0;
+    dimScores[idx] = { correct, total };
+
+    if (correct === total && total > 0) {
+      scoreEl.textContent = `✅ Parfait ! ${correct}/${total} — Tu maîtrises cette dimension !`;
+      scoreEl.style.color = '#2a9a4a';
+      document.getElementById('next-' + idx).classList.add('visible');
+    } else if (correct >= total * 0.7) {
+      scoreEl.textContent = `👍 Bien ! ${correct}/${total} — Quelques mots à revoir.`;
+      scoreEl.style.color = '#e8a33a';
+      document.getElementById('next-' + idx).classList.add('visible');
+    } else {
+      scoreEl.textContent = `💪 ${correct}/${total} — Réessaie, tu vas y arriver !`;
+      scoreEl.style.color = '#e74c3c';
+    }
+  }
+
+  function resetDim(idx) {
+    initDim(idx);
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  function goTo(idx) {
+    document.querySelectorAll('.dimension').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.dim-pill').forEach((p, i) => {
+      p.classList.remove('active');
+      if (i < idx && dimScores[i] !== null) p.classList.add('done');
+      if (i === idx) p.classList.add('active');
+    });
+    currentDim = idx;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showFinal() {
+    document.querySelectorAll('.dimension').forEach(d => d.classList.remove('active'));
+    document.getElementById('dim-nav').style.display = 'none';
+    document.getElementById('final-screen').classList.add('visible');
+
+    const grid = document.getElementById('scores-grid');
+    const labels = ['E / I', 'S / N', 'T / F', 'J / P'];
+    const names = ['Extraversion / Introversion', 'Sensation / iNtuition', 'Pensée / Sentiment', 'Jugement / Perception'];
+    grid.innerHTML = '';
+
+    let totalC = 0, totalT = 0;
+    dimScores.forEach((s, i) => {
+      if (!s) return;
+      totalC += s.correct; totalT += s.total;
+      const card = document.createElement('div');
+      card.className = 'score-card';
+      const pct = Math.round(s.correct / s.total * 100);
+      card.innerHTML = `
+        <div class="score-card-title">${labels[i]} — ${names[i]}</div>
+        <div class="score-card-value">${s.correct}/${s.total} <span style="font-size:1rem;font-family:'DM Sans';color:var(--text-dim)">(${pct}%)</span></div>
+      `;
+      grid.appendChild(card);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function restartAll() {
+    dimScores = [null, null, null, null];
+    document.getElementById('final-screen').classList.remove('visible');
+    document.getElementById('dim-nav').style.display = 'flex';
+    document.querySelectorAll('.dim-pill').forEach(p => { p.classList.remove('done','active'); });
+    document.getElementById('pill-0').classList.add('active');
+    DIMS.forEach((d, i) => initDim(i));
+    goTo(0);
+  }
+
+  // Pool drag support init
+  DIMS.forEach((d, i) => {
+    const pool = document.getElementById('pool-' + i);
+    pool.setAttribute('ondragover', `onDragOverPool(event,${i})`);
+    pool.setAttribute('ondrop', `onDropPool(event,${i})`);
+  });
+
+  // Init toutes les dimensions
+  DIMS.forEach((d, i) => initDim(i));
+</script>
+</body>
+</html>
