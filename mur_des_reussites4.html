@@ -37,7 +37,6 @@
     pointer-events: none;
   }
 
-  /* ── Header ── */
   header {
     background: white;
     border-bottom: 1px solid var(--border);
@@ -60,7 +59,6 @@
     color: var(--accent);
     line-height: 1;
   }
-
   .header-left p {
     font-size: 0.8rem;
     color: var(--text-dim);
@@ -71,11 +69,11 @@
   .header-right {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     flex-wrap: wrap;
   }
 
-  .count-badge {
+  .count-badge, #stats span {
     background: var(--accent-light);
     color: var(--accent);
     font-size: 0.8rem;
@@ -84,27 +82,6 @@
     border-radius: 20px;
   }
 
-  .sync-indicator {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .sync-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #ccc;
-    transition: background 0.3s;
-  }
-  .sync-dot.ok { background: var(--green); }
-  .sync-dot.loading { background: var(--accent); animation: pulse 0.8s infinite; }
-  .sync-dot.error { background: #e74c3c; }
-
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  /* Bouton mode formateur */
   .btn-trainer {
     background: transparent;
     border: 1.5px solid var(--border);
@@ -123,7 +100,6 @@
   .btn-trainer:hover { border-color: var(--accent); color: var(--accent); }
   .btn-trainer.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-  /* Bandeau mode formateur */
   .trainer-banner {
     display: none;
     background: linear-gradient(90deg, #fff3e0, #fff8f0);
@@ -137,7 +113,6 @@
   }
   .trainer-banner.visible { display: flex; }
 
-  /* ── Formulaire ── */
   .add-form {
     background: white;
     border: 1px solid var(--border);
@@ -165,8 +140,7 @@
     flex-wrap: wrap;
   }
 
-  .form-row input[type="text"],
-  .form-row textarea {
+  .form-row input[type="text"], .form-row textarea {
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -218,7 +192,6 @@
   .btn-add:hover:not(:disabled) { background: #c06830; transform: translateY(-1px); }
   .btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* ── Mur ── */
   .wall {
     padding: 1rem 2rem 3rem;
     columns: 4 220px;
@@ -232,35 +205,15 @@
     padding: 1.2rem 1.2rem 1rem;
     box-shadow: 3px 4px 16px var(--shadow), 0 1px 0 rgba(255,255,255,0.6) inset;
     position: relative;
-    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     transition: transform 0.25s, box-shadow 0.25s;
   }
-
   .note:hover { transform: translateY(-4px) rotate(0.5deg); box-shadow: 5px 8px 24px var(--shadow); }
 
-  .note::before {
-    content: '';
-    position: absolute;
-    top: -6px; left: 50%;
-    transform: translateX(-50%);
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #e0e0e0, #888);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    z-index: 2;
-  }
-
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.7) rotate(-3deg); }
-    to { opacity: 1; transform: scale(1) rotate(0deg); }
-  }
-
-  .note-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.5rem; }
+  .note-name { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.5rem; }
   .note-emoji { font-size: 1.6rem; margin-bottom: 0.4rem; display: block; }
   .note-text { font-family: 'Caveat', cursive; font-size: 1.15rem; line-height: 1.5; }
   .note-date { font-size: 0.7rem; opacity: 0.4; margin-top: 0.8rem; text-align: right; }
 
-  /* Bouton suppression — visible uniquement en mode formateur */
   .note-delete {
     position: absolute;
     top: 0.4rem; right: 0.5rem;
@@ -275,121 +228,13 @@
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    transition: background 0.2s, transform 0.2s;
     line-height: 1;
   }
-  .note-delete:hover { background: #c0392b; transform: scale(1.15); }
-
-  /* Activation globale des boutons suppression */
   body.trainer-mode .note-delete { display: flex; }
 
-  /* ── États ── */
-  #loading-state { padding: 3rem 2rem; text-align: center; color: var(--text-dim); font-size: 0.9rem; }
-  #empty-state { display: none; padding: 4rem 2rem; text-align: center; color: var(--text-dim); }
+  #loading-state, #empty-state { padding: 3rem 2rem; text-align: center; color: var(--text-dim); font-size: 0.9rem; }
   #empty-state.visible { display: block; }
-  .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
-  #empty-state p { font-size: 1rem; font-weight: 300; line-height: 1.7; }
 
-  /* ── Modal mot de passe ── */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 500;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.visible { display: flex; }
-
-  .modal {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem 2.5rem;
-    max-width: 380px;
-    width: 90%;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-    animation: slideUp 0.3s ease;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .modal h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .modal p {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-bottom: 1.2rem;
-    line-height: 1.5;
-  }
-
-  .modal input {
-    width: 100%;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
-    color: var(--text);
-    outline: none;
-    letter-spacing: 0.15em;
-    margin-bottom: 1rem;
-    transition: border-color 0.3s;
-  }
-  .modal input:focus { border-color: var(--accent); }
-  .modal input.error { border-color: #e74c3c; }
-
-  .modal-error {
-    font-size: 0.82rem;
-    color: #e74c3c;
-    margin-bottom: 0.8rem;
-    display: none;
-  }
-  .modal-error.visible { display: block; }
-
-  .modal-buttons {
-    display: flex;
-    gap: 0.7rem;
-    justify-content: flex-end;
-  }
-
-  .btn-cancel {
-    background: transparent;
-    border: 1.5px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    padding: 0.55rem 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-cancel:hover { border-color: var(--text-dim); }
-
-  .btn-confirm {
-    background: var(--accent);
-    color: white;
-    border: none;
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 700;
-    padding: 0.55rem 1.4rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-confirm:hover { background: #c06830; }
-
-  /* ── Toast ── */
   .toast {
     position: fixed;
     bottom: 2rem; left: 50%;
@@ -405,7 +250,6 @@
     z-index: 999;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.error-toast { background: #e74c3c; }
 </style>
 </head>
 <body>
@@ -431,21 +275,14 @@
     <p>Chaque victoire compte — même les petites.</p>
   </div>
   <div class="header-right">
-    <div class="sync-indicator">
-      <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-label">connexion...</span>
+    <div id="stats">
+      <span id="total-count">0 réussite 🎉</span> · 
+      <span id="streak-count">0 jour consécutif 💪</span>
     </div>
-    <div class="count-badge" id="count-badge">0 victoire</div>
-    <button class="btn-trainer" id="btn-trainer" onclick="toggleTrainerMode()">
-      🔐 Formateur
-    </button>
+    <button class="btn-trainer" id="btn-trainer" onclick="toggleTrainerMode()">🔐 Formateur</button>
   </div>
 </header>
-<div id="stats" style="padding: 0 2rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-dim);">
-  <span id="total-count">0 réussite 🎉</span>
-  &nbsp;·&nbsp;
-  <span id="streak-count">0 jour consécutif 💪</span>
-</div>
+
 <div class="trainer-banner" id="trainer-banner">
   ✅ Mode formateur actif — vous pouvez supprimer des victoires en cliquant sur ✕
   &nbsp;·&nbsp;
@@ -456,7 +293,7 @@
   <div class="form-title">✦ Ajoute ta victoire du jour</div>
   <div class="form-row">
     <input type="text" id="input-name" placeholder="Ton prénom" maxlength="30"/>
-    <textarea id="input-text" placeholder="Ma victoire : j'ai osé prendre la parole, j'ai envoyé un CV, j'ai souri ce matin..." maxlength="200"></textarea>
+    <textarea id="input-text" placeholder="Ma victoire..." maxlength="200"></textarea>
   </div>
   <div class="form-bottom">
     <div class="color-picker">
@@ -478,217 +315,55 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const EMOJIS = ['🌟','💪','🎯','✨','🌱','🏆','🎉','💡','🔥','🌈','🦋','⭐','🌻','💛','🚀'];
-  const TEXT_COLORS = {
-    '#fef3c7':'#78350f','#d1fae5':'#064e3b','#dbeafe':'#1e3a8a',
-    '#fce7f3':'#831843','#ede9fe':'#4c1d95','#fff7ed':'#7c2d12'
-  };
-  const STORAGE_KEY = 'mur_reussites_indigo';
+const EMOJIS = ['🌟','💪','🎯','✨','🌱','🏆','🎉','💡','🔥','🌈','🦋','⭐','🌻','💛','🚀'];
+const TEXT_COLORS = {
+  '#fef3c7':'#78350f','#d1fae5':'#064e3b','#dbeafe':'#1e3a8a',
+  '#fce7f3':'#831843','#ede9fe':'#4c1d95','#fff7ed':'#7c2d12'
+};
+const STORAGE_KEY = 'mur_reussites_indigo';
+const TRAINER_PASSWORD = 'indigo2026';
 
-  // ⚠️ Changez ce mot de passe avant de déployer !
-  const TRAINER_PASSWORD = 'indigo2026';
+let selectedColor = '#fef3c7';
+let notes = [];
+let trainerMode = false;
 
-  let selectedColor = '#fef3c7';
-  let notes = [];
-  let trainerMode = false;
+// Identifier l’apprenant
+let username = localStorage.getItem('username');
+if (!username) {
+  username = prompt("Quel est ton prénom ?");
+  localStorage.setItem('username', username);
+}
 
-  // ── Stockage partagé ──────────────────────────────────────────────────────
- async function loadNotes() {
-  setSyncStatus('loading', 'chargement...');
-  try {
-    const result = localStorage.getItem(STORAGE_KEY);
-    notes = result ? JSON.parse(result) : [];
-    setSyncStatus('ok', 'local');
-  } catch (e) {
-    notes = [];
-    setSyncStatus('error', 'erreur');
-  }
+// Chargement
+function loadNotes() {
+  try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch(e){ notes=[]; }
   renderAll();
 }
+function saveNotes() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
 
-  async function saveNotes() {
-  setSyncStatus('loading', 'sauvegarde...');
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-    setSyncStatus('ok', 'local');
-    return true;
-  } catch (e) {
-    setSyncStatus('error', 'erreur');
-    return false;
-  }
+function toggleTrainerMode() { trainerMode ? exitTrainerMode() : openModal(); }
+function openModal() { document.getElementById('modal-overlay').classList.add('visible'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('visible'); }
+function checkPassword() {
+  const val = document.getElementById('pwd-input').value;
+  if(val===TRAINER_PASSWORD){ closeModal(); enterTrainerMode(); } 
+  else { document.getElementById('pwd-input').classList.add('error'); document.getElementById('pwd-error').classList.add('visible'); document.getElementById('pwd-input').value=''; document.getElementById('pwd-input').focus(); }
 }
+function enterTrainerMode() { trainerMode=true; document.body.classList.add('trainer-mode'); document.getElementById('btn-trainer').classList.add('active'); document.getElementById('btn-trainer').textContent='✅ Formateur'; document.getElementById('trainer-banner').classList.add('visible'); showToast('Mode formateur activé', false); }
+function exitTrainerMode() { trainerMode=false; document.body.classList.remove('trainer-mode'); document.getElementById('btn-trainer').classList.remove('active'); document.getElementById('btn-trainer').innerHTML='🔐 Formateur'; document.getElementById('trainer-banner').classList.remove('visible'); }
 
-  // ── Mode formateur ────────────────────────────────────────────────────────
-  function toggleTrainerMode() {
-    if (trainerMode) {
-      exitTrainerMode();
-    } else {
-      openModal();
-    }
-  }
+function selectColor(el){ document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected')); el.classList.add('selected'); selectedColor=el.dataset.color; }
+function addNote(){
+  const name=document.getElementById('input-name').value.trim();
+  const text=document.getElementById('input-text').value.trim();
+  if(!name||!text) return;
+  const note={id:Date.now(), user:username, name, text, color:selectedColor, emoji:EMOJIS[Math.floor(Math.random()*EMOJIS.length)], date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})};
+  notes.unshift(note); saveNotes(); renderAll(); document.getElementById('input-text').value=''; showToast('🎉 Victoire publiée !', false);
+}
+function deleteNote(id){ if(!trainerMode) return; if(!confirm('Supprimer cette victoire ?')) return; notes=notes.filter(n=>n.id!==id); saveNotes(); renderAll(); showToast('Victoire supprimée.', false); }
 
-  function openModal() {
-    document.getElementById('modal-overlay').classList.add('visible');
-    document.getElementById('pwd-input').value = '';
-    document.getElementById('pwd-error').classList.remove('visible');
-    document.getElementById('pwd-input').classList.remove('error');
-    setTimeout(() => document.getElementById('pwd-input').focus(), 100);
-  }
-
-  function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('visible');
-  }
-
-  function checkPassword() {
-    const val = document.getElementById('pwd-input').value;
-    if (val === TRAINER_PASSWORD) {
-      closeModal();
-      enterTrainerMode();
-    } else {
-      document.getElementById('pwd-input').classList.add('error');
-      document.getElementById('pwd-error').classList.add('visible');
-      document.getElementById('pwd-input').value = '';
-      document.getElementById('pwd-input').focus();
-    }
-  }
-
-  function enterTrainerMode() {
-    trainerMode = true;
-    document.body.classList.add('trainer-mode');
-    document.getElementById('btn-trainer').classList.add('active');
-    document.getElementById('btn-trainer').textContent = '✅ Formateur';
-    document.getElementById('trainer-banner').classList.add('visible');
-    showToast('Mode formateur activé — vous pouvez supprimer des victoires', false);
-  }
-
-  function exitTrainerMode() {
-    trainerMode = false;
-    document.body.classList.remove('trainer-mode');
-    document.getElementById('btn-trainer').classList.remove('active');
-    document.getElementById('btn-trainer').innerHTML = '🔐 Formateur';
-    document.getElementById('trainer-banner').classList.remove('visible');
-  }
-
-  // ── Post-its ──────────────────────────────────────────────────────────────
-  function selectColor(el) {
-    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedColor = el.dataset.color;
-  }
-
-  async function addNote() {
-    const name = document.getElementById('input-name').value.trim();
-    const text = document.getElementById('input-text').value.trim();
-    document.getElementById('input-name').style.borderColor = name ? '' : '#e74c3c';
-    document.getElementById('input-text').style.borderColor = text ? '' : '#e74c3c';
-    if (!name || !text) return;
-
-    const btn = document.getElementById('btn-add');
-    btn.disabled = true;
-    btn.textContent = '⏳ Publication...';
-
-    const note = {
-      id: Date.now(),
-      name,
-      text,
-      color: selectedColor,
-      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-      date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }),
-      rotate: (Math.random() * 3 - 1.5).toFixed(1)
-    };
-
-    notes.unshift(note);
-    await saveNotes();
-    renderNote(note, true);
-    updateCount();
-
-    document.getElementById('input-text').value = '';
-    document.getElementById('input-name').style.borderColor = '';
-    document.getElementById('input-text').style.borderColor = '';
-    document.getElementById('empty-state').classList.remove('visible');
-    btn.disabled = false;
-    btn.textContent = '🌟 Publier ma victoire';
-    showToast('🎉 Victoire publiée pour tout le groupe !', false);
-  }
-
-  async function deleteNote(id) {
-    if (!trainerMode) return;
-    if (!confirm('Supprimer cette victoire du mur ?')) return;
-    notes = notes.filter(n => n.id !== id);
-    await saveNotes();
-    const el = document.getElementById('note-' + id);
-    if (el) {
-      el.style.transition = 'all 0.3s';
-      el.style.opacity = '0';
-      el.style.transform = 'scale(0.5)';
-      setTimeout(() => el.remove(), 300);
-    }
-    updateCount();
-    if (notes.length === 0) document.getElementById('empty-state').classList.add('visible');
-    showToast('Victoire supprimée.', false);
-  }
-
-  function renderNote(note, prepend = false) {
-    const wall = document.getElementById('wall');
-    const div = document.createElement('div');
-    div.className = 'note';
-    div.id = 'note-' + note.id;
-    div.style.background = note.color;
-    div.style.color = TEXT_COLORS[note.color] || '#2c2416';
-    div.style.transform = `rotate(${note.rotate}deg)`;
-    div.innerHTML = `
-      <button class="note-delete" onclick="deleteNote(${note.id})" title="Supprimer">✕</button>
-      <div class="note-name">${esc(note.name)}</div>
-      <span class="note-emoji">${note.emoji}</span>
-      <div class="note-text">${esc(note.text)}</div>
-      <div class="note-date">${note.date}</div>
-    `;
-    if (prepend && wall.firstChild) wall.insertBefore(div, wall.firstChild);
-    else wall.appendChild(div);
-  }
-
-  function renderAll() {
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('wall').innerHTML = '';
-    if (notes.length === 0) {
-      document.getElementById('empty-state').classList.add('visible');
-    } else {
-      document.getElementById('empty-state').classList.remove('visible');
-      notes.forEach(n => renderNote(n));
-    }
-    updateCount();
-  }
-
-  function updateCount() {
-    const n = notes.length;
-    document.getElementById('count-badge').textContent =
-      n === 0 ? '0 victoire' : n === 1 ? '1 victoire' : n + ' victoires';
-  }
-
-  function setSyncStatus(status, label) {
-    document.getElementById('sync-dot').className = 'sync-dot ' + status;
-    document.getElementById('sync-label').textContent = label;
-  }
-
-  function showToast(msg, isError) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
-    setTimeout(() => t.className = 'toast' + (isError ? ' error-toast' : ''), 3000);
-  }
-
-  function esc(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // Fermer la modal si on clique à l'extérieur
-  document.getElementById('modal-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-
-  // Init + refresh toutes les 30s
-  loadNotes();
-  setInterval(loadNotes, 30000);
-</script>
-</body>
-</html>
+function renderNote(note){
+  const wall=document.getElementById('wall');
+  const div=document.createElement('div'); div.className='note'; div.id='note-'+note.id;
+  div.style.background=note.color; div.style.color=TEXT_COLORS[note.color]||'#2c2416';
+  div.innerHTML=`<button class="note-delete" onclick="deleteNote(${note.id})">✕</button><div class="note-name">${esc(note.name)}</div><span class="note-emoji">${note.emoji}</span><div class="note-text">${esc(note
