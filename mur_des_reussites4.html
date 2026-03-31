@@ -489,28 +489,30 @@
   let trainerMode = false;
 
   // ── Stockage partagé ──────────────────────────────────────────────────────
-  async function loadNotes() {
-    setSyncStatus('loading', 'chargement...');
-    try {
-      const result = await window.storage.get(STORAGE_KEY, true);
-      notes = result ? JSON.parse(result.value) : [];
-      setSyncStatus('ok', 'synchronisé');
-    } catch (e) {
-      notes = [];
-      setSyncStatus('ok', 'prêt');
-    }
-    renderAll();
+ async function loadNotes() {
+  setSyncStatus('loading', 'chargement...');
+  try {
+    const result = localStorage.getItem(STORAGE_KEY);
+    notes = result ? JSON.parse(result) : [];
+    setSyncStatus('ok', 'local');
+  } catch (e) {
+    notes = [];
+    setSyncStatus('error', 'erreur');
   }
+  renderAll();
+}
 
   async function saveNotes() {
-    setSyncStatus('loading', 'sauvegarde...');
-    try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify(notes), true);
-      setSyncStatus('ok', 'synchronisé');
-    } catch (e) {
-      setSyncStatus('error', 'erreur sync');
-    }
+  setSyncStatus('loading', 'sauvegarde...');
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    setSyncStatus('ok', 'local');
+    return true;
+  } catch (e) {
+    setSyncStatus('error', 'erreur');
+    return false;
   }
+}
 
   // ── Mode formateur ────────────────────────────────────────────────────────
   function toggleTrainerMode() {
